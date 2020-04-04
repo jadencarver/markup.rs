@@ -104,15 +104,16 @@ impl Parse for Node {
 
 impl Parse for Element {
     fn parse(input: ParseStream) -> Result<Self> {
-        let (mut name, mut id, mut classes) = {
+        let (name, mut ns, mut id, mut classes) = {
             let lookahead = input.lookahead1();
             if lookahead.peek(syn::Ident) {
                 let name: Ident = input.parse()?;
-                (name.to_string(), None, Vec::new())
+                (name.to_string(), Vec::new(), None, Vec::new())
             } else if lookahead.peek(syn::Token![#]) {
                 let _: syn::Token![#] = input.parse()?;
                 (
                     "div".into(),
+                    Vec::new(),
                     Some(identifier_or_string_literal_or_expression(input)?),
                     Vec::new(),
                 )
@@ -120,6 +121,7 @@ impl Parse for Element {
                 let _: syn::Token![.] = input.parse()?;
                 (
                     "div".into(),
+                    Vec::new(),
                     None,
                     vec![identifier_or_string_literal_or_expression(input)?],
                 )
@@ -138,15 +140,7 @@ impl Parse for Element {
                 classes.push(identifier_or_string_literal_or_expression(input)?);
             } else if lookahead.peek(syn::Token![:]) {
                 let _: syn::Token![:] = input.parse()?;
-                let lookahead2 = input.lookahead1();
-                if lookahead2.peek(syn::token::If) {
-                    let _: syn::token::If = input.parse()?;
-                    name = format!("{}:if", name);
-                } else {
-                    let namespace: Ident = input.parse()?;
-                    name = format!("{}:{}", name, namespace.to_string());
-                }
-
+                ns.push(identifier_or_string_literal_or_expression(input)?);
             } else {
                 break;
             }
@@ -180,6 +174,7 @@ impl Parse for Element {
         };
         Ok(Element {
             name,
+            ns,
             id,
             classes,
             attributes,

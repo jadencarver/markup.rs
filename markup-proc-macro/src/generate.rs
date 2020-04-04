@@ -90,6 +90,7 @@ impl Generate for Element {
     fn generate(&self, builder: &mut Builder) {
         let Element {
             name,
+            ns,
             id,
             classes,
             attributes,
@@ -98,6 +99,10 @@ impl Generate for Element {
         } = self;
         builder.raw("<");
         builder.str(name);
+        for n in ns {
+            builder.raw(":");
+            builder.expr(n);
+        }
         if let Some(id) = id {
             builder.raw(" id=\"");
             builder.expr(id);
@@ -140,6 +145,10 @@ impl Generate for Element {
         if *close {
             builder.raw("</");
             builder.str(name);
+            for n in ns {
+                builder.raw(":");
+                builder.expr(n);
+            }
             builder.raw(">");
         }
     }

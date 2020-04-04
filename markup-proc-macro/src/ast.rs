@@ -22,6 +22,7 @@ pub enum Node {
 #[derive(Debug)]
 pub struct Element {
     pub name: String,
+    pub ns: Vec<syn::Expr>,
     pub id: Option<syn::Expr>,
     pub classes: Vec<syn::Expr>,
     pub attributes: Vec<Attribute>,
