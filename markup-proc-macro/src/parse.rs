@@ -138,8 +138,15 @@ impl Parse for Element {
                 classes.push(identifier_or_string_literal_or_expression(input)?);
             } else if lookahead.peek(syn::Token![:]) {
                 let _: syn::Token![:] = input.parse()?;
-                let namespace: Ident = input.parse()?;
-                name = format!("{}:{}", name, namespace.to_string());
+                let lookahead2 = input.lookahead1();
+                if lookahead2.peek(syn::token::If) {
+                    let _: syn::token::If = input.parse()?;
+                    name = format!("{}:if", name);
+                } else {
+                    let namespace: Ident = input.parse()?;
+                    name = format!("{}:{}", name, namespace.to_string());
+                }
+
             } else {
                 break;
             }
