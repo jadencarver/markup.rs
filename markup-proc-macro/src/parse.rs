@@ -104,7 +104,7 @@ impl Parse for Node {
 
 impl Parse for Element {
     fn parse(input: ParseStream) -> Result<Self> {
-        let (name, mut id, mut classes) = {
+        let (mut name, mut id, mut classes) = {
             let lookahead = input.lookahead1();
             if lookahead.peek(syn::Ident) {
                 let name: Ident = input.parse()?;
@@ -136,6 +136,10 @@ impl Parse for Element {
             } else if lookahead.peek(syn::Token![.]) {
                 let _: syn::Token![.] = input.parse()?;
                 classes.push(identifier_or_string_literal_or_expression(input)?);
+            } else if lookahead.peek(syn::Token![:]) {
+                let _: syn::Token![:] = input.parse()?;
+                let namespace: Ident = input.parse()?;
+                name = format!("{}:{}", name, namespace.to_string());
             } else {
                 break;
             }
