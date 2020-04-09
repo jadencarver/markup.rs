@@ -11,8 +11,11 @@ markup::define!(
             "Do Rah Me"
         }
     }
-    TestNAmespace3 {
+    TestNamespace3 {
         xsl:"apply-templates"[select="/test"] {}
+    }
+    TestNamespace4 {
+        xsl:stylesheet[version="1.0", "xmlns:xsl"="http://www.w3.org/1999/XSL/Transform"] {}
     }
 );
 
@@ -24,16 +27,23 @@ fn it_supports_namespaces() {
 }
 
 #[test]
-fn it_supports_namespaces_with_attributes {
+fn it_supports_namespaces_with_attributes() {
     let result = TestNamespace2 {};
     let result_s = result.to_string();
     assert_eq!(result_s, "<xsl:if test=\"123\">Do Rah Me</xsl:if>");
 }
 
 #[test]
-fn it_supports_quoted_namespaces {
+fn it_supports_quoted_namespaces() {
     let result = TestNamespace3 {};
     let result_s = result.to_string();
     assert_eq!(result_s, "<xsl:apply-templates select=\"/test\"></xsl:apply-templates>");
+}
+
+#[test]
+fn it_supports_namespaced_attributes() {
+    let result = TestNamespace4 {};
+    let result_s = result.to_string();
+    assert_eq!(result_s, "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"></xsl:stylesheet>");
 }
 
